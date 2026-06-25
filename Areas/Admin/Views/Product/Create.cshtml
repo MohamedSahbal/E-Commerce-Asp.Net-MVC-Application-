@@ -1,0 +1,98 @@
+﻿@model ProductVM
+@{
+    ViewData["Title"] = "New Product";
+}
+
+<form asp-action="Create" method="post" enctype="multipart/form-data">
+
+    <div class="row g-4">
+
+        <div class="col-lg-8">
+
+            <div class="card border-0 shadow-sm mb-3">
+                <div class="card-header bg-transparent fw-semibold">Product Info</div>
+                <div class="card-body">
+
+                    <div class="mb-3">
+                        <label asp-for="Name" class="form-label"></label>
+                        <input asp-for="Name" class="form-control" />
+                        <span asp-validation-for="Name" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-0">
+                        <label asp-for="Description" class="form-label"></label>
+                        <textarea asp-for="Description" class="form-control" rows="5"></textarea>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Images (CREATE = REQUIRED VISUALLY ONLY) -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-transparent fw-semibold">Images</div>
+
+                <div class="card-body">
+
+                    <div>
+                        <label asp-for="NewImages" class="form-label">Upload Images</label>
+                        <input asp-for="NewImages" type="file"
+                               class="form-control"
+                               multiple accept="image/*" />
+
+                        <div class="form-text">
+                            At least one image is required.
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+        <div class="col-lg-4">
+
+            <div class="card border-0 shadow-sm mb-3">
+                <div class="card-header bg-transparent fw-semibold">Pricing & Stock</div>
+                <div class="card-body">
+
+                    <div class="mb-3">
+                        <label asp-for="Price" class="form-label"></label>
+                        <input asp-for="Price" class="form-control" />
+                    </div>
+
+                    <div>
+                        <label asp-for="StockQuantity" class="form-label"></label>
+                        <input asp-for="StockQuantity" class="form-control" />
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm mb-3">
+                <div class="card-header bg-transparent fw-semibold">Category</div>
+                <div class="card-body">
+
+                    <select asp-for="CategoryId" asp-items="Model.Categories" class="form-select">
+                        <option value="">— Select category —</option>
+                    </select>
+
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm mb-3">
+                <div class="card-header bg-transparent fw-semibold">Status</div>
+                <div class="card-body">
+                    <input asp-for="IsActive" class="form-check-input" />
+                    <label asp-for="IsActive" class="form-check-label">Active</label>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">
+                Create Product
+            </button>
+
+        </div>
+
+    </div>
+
+</form>

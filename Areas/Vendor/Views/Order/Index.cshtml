@@ -1,0 +1,72 @@
+﻿@using ECommerceApplication.Models
+@model IEnumerable<Order>
+@{
+    ViewData["Title"] = "Orders";
+    Layout = "~/Areas/Vendor/Views/Shared/_VendorLayout.cshtml";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="mb-0"><i class="bi bi-bag-check me-2"></i>Orders</h4>
+    <span class="badge bg-secondary fs-6">@Model.Count() orders</span>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="text-center py-5 text-muted">
+        <i class="bi bi-bag display-3 mb-3 d-block"></i>
+        <p>No orders for your products yet.</p>
+    </div>
+}
+else
+{
+    <div class="card border-0 shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Order</th>
+                        <th>Customer</th>
+                        <th>Date</th>
+                        <th>Your Items</th>
+                        <th>Your Revenue</th>
+                        <th>Status</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var o in Model)
+                    {
+                        var revenue = o.OrderItems.Sum(i => i.UnitPrice * i.Quantity);
+                        <tr>
+                            <td class="fw-semibold">#@o.Id</td>
+                            <td>@o.Customer.FirstName @o.Customer.LastName</td>
+                            <td class="text-muted small">@o.CreatedAt.ToString("MMM dd, yyyy")</td>
+                            <td>@o.OrderItems.Sum(i => i.Quantity) item(s)</td>
+                            <td class="fw-bold text-primary">$@revenue.ToString("N2")</td>
+                            <td>
+                                @{
+                                    var (bg, icon) = o.Status switch
+                                    {
+                                        OrderStatus.Pending => ("bg-warning text-dark", "bi-hourglass"),
+                                        OrderStatus.Processing => ("bg-info text-dark", "bi-gear"),
+                                        OrderStatus.Shipped => ("bg-primary", "bi-truck"),
+                                        OrderStatus.Delivered => ("bg-success", "bi-check-circle"),
+                                        OrderStatus.Cancelled => ("bg-danger", "bi-x-circle"),
+                                        _ => ("bg-secondary", "bi-circle")
+                                    };
+                                }
+                                <span class="badge @bg"><i class="bi @icon me-1"></i>@o.Status</span>
+                            </td>
+                            <td>
+                                <a asp-action="Details" asp-route-id="@o.Id"
+                                   class="btn btn-sm btn-outline-secondary">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}

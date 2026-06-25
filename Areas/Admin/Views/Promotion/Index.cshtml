@@ -1,0 +1,100 @@
+﻿@model IEnumerable<Promotion>
+@{
+    ViewData["Title"] = "Promotions";
+    var now = DateTime.UtcNow;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="mb-0"><i class="bi bi-percent me-2"></i>Promotions</h4>
+    <a asp-action="Create" class="btn btn-primary btn-sm">
+        <i class="bi bi-plus-lg me-1"></i>New Promotion
+    </a>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Name</th>
+                    <th>Code</th>
+                    <th>Discount</th>
+                    <th>Applies To</th>
+                    <th>Validity</th>
+                    <th>Usage</th>
+                    <th>Status</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var p in Model)
+                {
+                    bool live = p.IsActive && p.StartDate <= now && p.EndDate >= now
+                                && (!p.UsageLimit.HasValue || p.UsageCount < p.UsageLimit);
+                    <tr>
+                        <td class="fw-semibold">@p.Name</td>
+                        <td>
+                            <code class="bg-light px-2 py-1 rounded">@p.Code</code>
+                        </td>
+                        <td>
+                            <span class="badge bg-success fs-6">@p.DiscountPercentage%</span>
+                        </td>
+                        <td>
+                            @if (p.CategoryId.HasValue)
+                            {
+                                <span class="badge bg-info text-dark">@p.Category?.Name</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">Site-wide</span>
+                            }
+                        </td>
+                        <td class="small text-muted">
+                            @p.StartDate.ToString("MMM dd") – @p.EndDate.ToString("MMM dd, yyyy")
+                        </td>
+                        <td class="small">
+                            @p.UsageCount @(p.UsageLimit.HasValue ? $"/ {p.UsageLimit}" : "/ ∞")
+                        </td>
+                        <td>
+                            @if (!p.IsActive)
+                            {
+                                <span class="badge bg-secondary">Inactive</span>
+                            }
+                            else if (p.EndDate < now)
+                            {
+                                <span class="badge bg-danger">Expired</span>
+                            }
+                            else if (p.StartDate > now)
+                            {
+                                <span class="badge bg-warning text-dark">Scheduled</span>
+                            }
+                            else if (p.UsageLimit.HasValue && p.UsageCount >= p.UsageLimit)
+                            {
+                                <span class="badge bg-danger">Limit Reached</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-success">Live</span>
+                            }
+                        </td>
+                        <td class="text-end">
+                            <a asp-action="Edit" asp-route-id="@p.Id" class="btn btn-sm btn-outline-secondary me-1">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <form asp-action="Delete" asp-route-id="@p.Id" method="post" class="d-inline"
+                                  onsubmit="return confirm('Delete this promotion?')">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+                @if (!Model.Any())
+                {
+                    <tr><td colspan="8" class="text-center text-muted py-4">No promotions yet.</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

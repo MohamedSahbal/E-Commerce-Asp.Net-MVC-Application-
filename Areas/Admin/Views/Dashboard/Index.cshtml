@@ -1,0 +1,101 @@
+﻿@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="mb-0">Dashboard</h4>
+    <span class="text-muted small">Overview</span>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-xl-3">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body d-flex align-items-center gap-3">
+                <div class="rounded-3 bg-primary bg-opacity-10 p-3">
+                    <i class="bi bi-box-seam fs-3 text-primary"></i>
+                </div>
+                <div>
+                    <div class="text-muted small">Products</div>
+                    <div class="fs-4 fw-bold">@ViewBag.TotalProducts</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body d-flex align-items-center gap-3">
+                <div class="rounded-3 bg-success bg-opacity-10 p-3">
+                    <i class="bi bi-receipt fs-3 text-success"></i>
+                </div>
+                <div>
+                    <div class="text-muted small">Orders</div>
+                    <div class="fs-4 fw-bold">@ViewBag.TotalOrders</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body d-flex align-items-center gap-3">
+                <div class="rounded-3 bg-info bg-opacity-10 p-3">
+                    <i class="bi bi-people fs-3 text-info"></i>
+                </div>
+                <div>
+                    <div class="text-muted small">Customers</div>
+                    <div class="fs-4 fw-bold">@ViewBag.TotalCustomers</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body d-flex align-items-center gap-3">
+                <div class="rounded-3 bg-warning bg-opacity-10 p-3">
+                    <i class="bi bi-currency-dollar fs-3 text-warning"></i>
+                </div>
+                <div>
+                    <div class="text-muted small">Revenue</div>
+                    <div class="fs-4 fw-bold">$@ViewBag.TotalRevenue.ToString("N2")</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (ViewBag.PendingVendors > 0)
+{
+    <div class="alert alert-warning d-flex align-items-center gap-2">
+        <i class="bi bi-shop fs-5"></i>
+        <span>
+            <strong>@ViewBag.PendingVendors</strong> vendor application(s) waiting for review.
+            <a asp-area="Admin" asp-controller="Vendor" asp-action="Index" class="alert-link ms-1">Review now →</a>
+        </span>
+    </div>
+}
+
+<div class="row g-3">
+    <div class="col-md-4">
+        <a asp-area="Admin" asp-controller="Category" asp-action="Index" class="card border-0 shadow-sm text-decoration-none text-dark h-100">
+            <div class="card-body text-center py-4">
+                <i class="bi bi-tags display-5 text-primary mb-2"></i>
+                <h6>Manage Categories</h6>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-4">
+        <a asp-area="Admin" asp-controller="Product" asp-action="Index" class="card border-0 shadow-sm text-decoration-none text-dark h-100">
+            <div class="card-body text-center py-4">
+                <i class="bi bi-box-seam display-5 text-success mb-2"></i>
+                <h6>Manage Products</h6>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-4">
+        <a asp-area="Admin" asp-controller="Vendor" asp-action="Index" class="card border-0 shadow-sm text-decoration-none text-dark h-100">
+            <div class="card-body text-center py-4">
+                <i class="bi bi-shop display-5 text-warning mb-2"></i>
+                <h6>Manage Vendors</h6>
+            </div>
+        </a>
+    </div>
+</div>

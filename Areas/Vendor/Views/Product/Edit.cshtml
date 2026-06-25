@@ -1,0 +1,124 @@
+﻿@model ProductVM
+@{
+    ViewData["Title"] = "Edit Product";
+}
+
+<form asp-action="Edit" method="post" enctype="multipart/form-data">
+
+    <input type="hidden" asp-for="Id" />
+
+    <div class="row g-4">
+
+        <div class="col-lg-8">
+
+            <div class="card border-0 shadow-sm mb-3">
+                <div class="card-header bg-transparent fw-semibold">Product Info</div>
+                <div class="card-body">
+
+                    <div class="mb-3">
+                        <label asp-for="Name" class="form-label"></label>
+                        <input asp-for="Name" class="form-control" />
+                    </div>
+
+                    <div class="mb-0">
+                        <label asp-for="Description" class="form-label"></label>
+                        <textarea asp-for="Description" class="form-control" rows="5"></textarea>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- EXISTING IMAGES -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-transparent fw-semibold">Images</div>
+
+                <div class="card-body">
+
+                    @if (Model.ExistingImages.Any())
+                    {
+                        <div class="row g-2 mb-3">
+
+                            @foreach (var img in Model.ExistingImages)
+                            {
+                                <div class="col-3">
+                                    <img src="@img.ImageUrl"
+                                         class="img-fluid rounded border" />
+
+                                    @if (img.IsMain)
+                                    {
+                                        <span class="badge bg-success">Main</span>
+                                    }
+
+                                    <form asp-action="DeleteImage" method="post">
+                                        <input type="hidden" name="id" value="@img.Id" />
+                                        <input type="hidden" name="productId" value="@Model.Id" />
+                                        <button class="btn btn-sm btn-danger">Delete</button>
+                                    </form>
+                                </div>
+                            }
+
+                        </div>
+                    }
+
+                    <div>
+                        <label asp-for="NewImages" class="form-label">
+                            Add More Images (Optional)
+                        </label>
+
+                        <input asp-for="NewImages"
+                               type="file"
+                               class="form-control"
+                               multiple />
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+        <div class="col-lg-4">
+
+            <div class="card border-0 shadow-sm mb-3">
+                <div class="card-header bg-transparent fw-semibold">Price</div>
+                <div class="card-body">
+
+                    <input asp-for="Price" class="form-control mb-2" />
+
+                </div>
+                <div class="card-header bg-transparent fw-semibold">Stock Quantity</div>
+
+                <div class="card-body">
+
+                    <input asp-for="StockQuantity" class="form-control" />
+
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm mb-3">
+                <div class="card-header bg-transparent fw-semibold">Category</div>
+                <div class="card-body">
+
+                    <select asp-for="CategoryId"
+                            asp-items="Model.Categories"
+                            class="form-select">
+                    </select>
+
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm mb-3">
+                <div class="card-body">
+                    <input asp-for="IsActive" class="form-check-input" />
+                    <label>Active</label>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">
+                Save Changes
+            </button>
+
+        </div>
+
+    </div>
+
+</form>

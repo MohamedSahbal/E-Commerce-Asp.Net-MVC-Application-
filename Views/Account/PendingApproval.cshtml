@@ -1,0 +1,20 @@
+﻿@{
+    ViewData["Title"] = "Pending Approval";
+}
+
+<div class="row justify-content-center mt-5">
+    <div class="col-md-6 text-center">
+        <div class="mb-4">
+            <i class="bi bi-hourglass-split display-1 text-warning"></i>
+        </div>
+        <h2 class="mb-3">Application Under Review</h2>
+        <p class="text-muted mb-4">
+            Your vendor application is currently being reviewed by our admin team.
+            You'll gain access to your vendor dashboard once approved.
+        </p>
+        <a asp-controller="Home" asp-action="Index" class="btn btn-primary me-2">Browse Store</a>
+        <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+            <button type="submit" class="btn btn-outline-secondary">Sign Out</button>
+        </form>
+    </div>
+</div>

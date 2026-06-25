@@ -1,0 +1,207 @@
+﻿@using ECommerce_Application.ViewModels
+@model CartVM
+@{
+    ViewData["Title"] = "Shopping Cart";
+}
+
+<h4 class="mb-4">
+    <i class="bi bi-cart3 me-2"></i>Shopping Cart
+    <span class="badge bg-secondary ms-1">@Model.Items.Count item@(Model.Items.Count != 1 ? "s" : "")</span>
+</h4>
+
+@if (!Model.Items.Any())
+{
+    <div class="text-center py-5">
+        <i class="bi bi-cart3 display-2 text-muted mb-3 d-block"></i>
+        <h5>Your cart is empty</h5>
+        <p class="text-muted">Looks like you haven't added anything yet.</p>
+        <a asp-controller="Shop" asp-action="Index" class="btn btn-primary">
+            <i class="bi bi-grid me-1"></i>Start Shopping
+        </a>
+    </div>
+}
+else
+{
+    <div class="row g-4 align-items-start">
+
+        <!-- Cart items -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm mb-3">
+                @foreach (var item in Model.Items)
+                {
+                    <div class="cart-item p-3 @(item != Model.Items.Last() ? "border-bottom" : "")">
+                        <div class="row g-3 align-items-center">
+
+                            <!-- Image -->
+                            <div class="col-auto">
+                                <a asp-controller="Shop" asp-action="Details" asp-route-id="@item.ProductId">
+                                    @if (item.ImageUrl is not null)
+                                    {
+                                        <img src="@item.ImageUrl" class="rounded"
+                                             style="width:80px;height:80px;object-fit:cover" alt="@item.ProductName" />
+                                    }
+                                    else
+                                    {
+                                        <div class="rounded bg-light d-flex align-items-center justify-content-center"
+                                             style="width:80px;height:80px">
+                                            <i class="bi bi-image text-muted"></i>
+                                        </div>
+                                    }
+                                </a>
+                            </div>
+
+                            <!-- Name & category -->
+                            <div class="col">
+                                <p class="text-muted small mb-0">@item.CategoryName</p>
+                                <a asp-controller="Shop" asp-action="Details" asp-route-id="@item.ProductId"
+                                   class="fw-semibold text-decoration-none text-dark">
+                                    @item.ProductName
+                                </a>
+                                <p class="text-muted small mb-0">$@item.UnitPrice.ToString("N2") each</p>
+                            </div>
+
+                            <!-- Quantity controls -->
+                            <div class="col-auto">
+                                <div class="d-flex align-items-center gap-1">
+                                    <form asp-action="UpdateQuantity" method="post">
+                                        <input type="hidden" name="itemId" value="@item.Id" />
+                                        <input type="hidden" name="quantity" value="@(item.Quantity - 1)" />
+                                        <button type="submit" class="btn btn-sm btn-outline-secondary"
+                                                style="width:30px;height:30px;padding:0"
+                                                title="Decrease">
+                                            −
+                                        </button>
+                                    </form>
+
+                                    <span class="fw-semibold px-2" style="min-width:2rem;text-align:center">
+                                        @item.Quantity
+                                    </span>
+
+                                    <form asp-action="UpdateQuantity" method="post">
+                                        <input type="hidden" name="itemId" value="@item.Id" />
+                                        <input type="hidden" name="quantity" value="@(item.Quantity + 1)" />
+                                        <button type="submit" class="btn btn-sm btn-outline-secondary"
+                                                style="width:30px;height:30px;padding:0"
+                                            @(item.Quantity >= item.MaxQuantity ? "disabled" : "")
+                                                title="Increase">
+                                            +
+                                        </button>
+                                    </form>
+                                </div>
+                                @if (item.Quantity >= item.MaxQuantity)
+                                {
+                                    <div class="text-danger text-center" style="font-size:.7rem">Max stock</div>
+                                }
+                            </div>
+
+                            <!-- Line total -->
+                            <div class="col-auto text-end" style="min-width:80px">
+                                <span class="fw-bold">$@item.LineTotal.ToString("N2")</span>
+                            </div>
+
+                            <!-- Remove -->
+                            <div class="col-auto">
+                                <form asp-action="Remove" method="post">
+                                    <input type="hidden" name="itemId" value="@item.Id" />
+                                    <button type="submit" class="btn btn-sm btn-link text-danger p-0" title="Remove">
+                                        <i class="bi bi-trash fs-5"></i>
+                                    </button>
+                                </form>
+                            </div>
+
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <!-- Cart actions -->
+            <div class="d-flex justify-content-between">
+                <a asp-controller="Shop" asp-action="Index" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-1"></i>Continue Shopping
+                </a>
+                <form asp-action="Clear" method="post"
+                      onsubmit="return confirm('Clear your entire cart?')">
+                    <button type="submit" class="btn btn-outline-danger">
+                        <i class="bi bi-trash me-1"></i>Clear Cart
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Order summary -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm mb-3">
+                <div class="card-header bg-transparent fw-semibold">Order Summary</div>
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">Subtotal</span>
+                        <span>$@Model.SubTotal.ToString("N2")</span>
+                    </div>
+
+                    @if (Model.AppliedPromotion is not null)
+                    {
+                        <div class="d-flex justify-content-between mb-2 text-success">
+                            <span>
+                                Discount
+                                <span class="badge bg-success-subtle text-success border border-success ms-1"
+                                      style="font-size:.7rem">
+                                    @Model.AppliedPromotion.Code
+                                </span>
+                                <span class="small">(−@Model.AppliedPromotion.DiscountPercentage%)</span>
+                            </span>
+                            <span>−$@Model.DiscountAmount.ToString("N2")</span>
+                        </div>
+                    }
+
+                    <hr />
+                    <div class="d-flex justify-content-between fw-bold fs-5 mb-3">
+                        <span>Total</span>
+                        <span class="text-primary">$@Model.Total.ToString("N2")</span>
+                    </div>
+
+                    <a asp-controller="Checkout" asp-action="Index" class="btn btn-primary w-100 mb-2">
+                        <i class="bi bi-lock me-1"></i>Proceed to Checkout
+                    </a>
+                </div>
+            </div>
+
+            <!-- Promo code -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    @if (Model.AppliedPromotion is null)
+                    {
+                        <form asp-action="ApplyPromotion" method="post">
+                            <label class="form-label fw-semibold">Promo Code</label>
+                            <div class="input-group">
+                                <input name="code" type="text" class="form-control text-uppercase"
+                                       placeholder="Enter code" maxlength="30" required />
+                                <button type="submit" class="btn btn-outline-primary">Apply</button>
+                            </div>
+                        </form>
+                    }
+                    else
+                    {
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <span class="fw-semibold">@Model.AppliedPromotion.Name</span><br />
+                                <span class="text-success small">
+                                    <i class="bi bi-check-circle me-1"></i>
+                                    @Model.AppliedPromotion.DiscountPercentage% off applied
+                                    @if (Model.AppliedPromotion.CategoryId.HasValue)
+                                    {
+                                        <span>(on @Model.AppliedPromotion.Category?.Name items)</span>
+                                    }
+                                </span>
+                            </div>
+                            <form asp-action="RemovePromotion" method="post">
+                                <button type="submit" class="btn btn-sm btn-link text-danger p-0">Remove</button>
+                            </form>
+                        </div>
+                    }
+                </div>
+            </div>
+
+        </div>
+    </div>
+}

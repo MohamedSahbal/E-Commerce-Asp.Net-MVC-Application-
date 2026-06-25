@@ -1,0 +1,324 @@
+﻿@model Product
+@{
+    ViewData["Title"] = Model.Name;
+    var images = Model.Images.ToList();
+    var mainImg = images.FirstOrDefault(i => i.IsMain) ?? images.FirstOrDefault();
+    var avgRating = Model.Reviews.Any() ? Model.Reviews.Average(r => r.Rating) : 0;
+    var reviewCount = Model.Reviews.Count;
+    var related = ViewBag.RelatedProducts as List<Product> ?? new();
+    var userReview = ViewBag.UserReview as Review;
+}
+
+<!-- Breadcrumb -->
+<nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-controller="Shop" asp-action="Index">Shop</a></li>
+        @if (Model.Category.ParentCategory is not null)
+        {
+            <li class="breadcrumb-item">
+                <a asp-controller="Shop" asp-action="Index"
+                   asp-route-categoryId="@Model.Category.ParentCategoryId">
+                    @Model.Category.ParentCategory.Name
+                </a>
+            </li>
+        }
+        <li class="breadcrumb-item">
+            <a asp-controller="Shop" asp-action="Index"
+               asp-route-categoryId="@Model.CategoryId">@Model.Category.Name</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">@Model.Name</li>
+    </ol>
+</nav>
+
+<div class="row g-4 mb-5">
+
+    <!-- Image gallery -->
+    <div class="col-md-5">
+        <div class="sticky-top" style="top:1rem">
+            <div class="rounded overflow-hidden border mb-2" id="mainImageBox" style="height:380px">
+                @if (mainImg is not null)
+                {
+                    <img id="mainImage" src="@mainImg.ImageUrl"
+                         class="w-100 h-100" style="object-fit:cover" alt="@Model.Name" />
+                }
+                else
+                {
+                    <div class="bg-light h-100 d-flex align-items-center justify-content-center">
+                        <i class="bi bi-image display-2 text-muted"></i>
+                    </div>
+                }
+            </div>
+            @if (images.Count > 1)
+            {
+                <div class="d-flex gap-2 flex-wrap">
+                    @foreach (var img in images)
+                    {
+                        <img src="@img.ImageUrl" alt=""
+                             class="rounded border thumb-img @(img.IsMain ? "border-primary border-2" : "")"
+                             style="width:64px;height:64px;object-fit:cover;cursor:pointer"
+                             onclick="switchImage('@img.ImageUrl', this)" />
+                    }
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Product info -->
+    <div class="col-md-7">
+        <span class="badge bg-light text-dark border mb-2">@Model.Category.Name</span>
+        <h2 class="mb-2">@Model.Name</h2>
+
+        <!-- Rating summary -->
+        @if (reviewCount > 0)
+        {
+            <div class="d-flex align-items-center gap-2 mb-3">
+                <div class="text-warning">
+                    @for (int i = 1; i <= 5; i++)
+                    {
+                        <i class="bi bi-star@(i <= Math.Round(avgRating) ? "-fill" : i - 0.5 <= avgRating ? "-half" : "")"></i>
+                    }
+                </div>
+                <span class="fw-semibold">@avgRating.ToString("F1")</span>
+                <a href="#reviews" class="text-muted small">@reviewCount review@(reviewCount != 1 ? "s" : "")</a>
+            </div>
+        }
+        else
+        {
+            <p class="text-muted small mb-3">No reviews yet</p>
+        }
+
+        <!-- Price -->
+        <div class="mb-3">
+            <span class="fs-2 fw-bold text-primary">$@Model.Price.ToString("N2")</span>
+        </div>
+
+        <!-- Stock -->
+        <div class="mb-3">
+            @if (Model.StockQuantity > 0)
+            {
+                <span class="badge bg-success fs-6">
+                    <i class="bi bi-check-circle me-1"></i>In Stock
+                </span>
+                @if (Model.StockQuantity < 5)
+                {
+                    <span class="text-danger small ms-2">Only @Model.StockQuantity left!</span>
+                }
+            }
+            else
+            {
+                <span class="badge bg-secondary fs-6">Out of Stock</span>
+            }
+        </div>
+
+        <!-- Description -->
+        @if (!string.IsNullOrWhiteSpace(Model.Description))
+        {
+            <p class="text-muted mb-4">@Model.Description</p>
+        }
+
+        <!-- Add to cart / wishlist -->
+        @if (User.Identity?.IsAuthenticated == true && User.IsInRole("Customer"))
+        {
+            <div class="d-flex gap-2 mb-4">
+                <form asp-controller="Cart" asp-action="Add" method="post">
+                    <input type="hidden" name="productId" value="@Model.Id" />
+                    <input type="hidden" name="quantity" value="1" />
+                    <button type="submit" class="btn btn-primary btn-lg" @(Model.StockQuantity == 0 ? "disabled" : "")>
+                        <i class="bi bi-cart-plus me-2"></i>Add to Cart
+                    </button>
+                </form>
+                <form asp-controller="Wishlist" asp-action="Toggle" method="post">
+                    <input type="hidden" name="productId" value="@Model.Id" />
+                    @{
+                        bool isWishlisted = ViewBag.IsWishlisted == true;
+                    }
+                    <button type="submit"
+                            class="btn @(isWishlisted ? "btn-danger" : "btn-outline-secondary") btn-lg"
+                            title="@(isWishlisted ? "Remove from Wishlist" : "Add to Wishlist")">
+                        <i class="bi bi-heart@(isWishlisted ? "-fill" : "")"></i>
+                    </button>
+                </form>
+            </div>
+        }
+        else if (User.Identity?.IsAuthenticated != true)
+        {
+            <div class="alert alert-light border mb-4">
+                <a asp-controller="Account" asp-action="Login"
+                   asp-route-returnUrl="@Context.Request.Path">Sign in</a>
+                to add to cart or wishlist.
+            </div>
+        }
+
+        <!-- Vendor info -->
+        <div class="text-muted small border-top pt-3">
+            <i class="bi bi-shop me-1"></i>
+            Sold by <strong>@Model.Vendor.FirstName @Model.Vendor.LastName</strong>
+        </div>
+    </div>
+</div>
+
+<!-- Reviews section -->
+<div id="reviews" class="mb-5">
+    <h4 class="mb-4">Customer Reviews</h4>
+
+    <!-- Write a review -->
+    @if (User.Identity?.IsAuthenticated == true && User.IsInRole("Customer"))
+    {
+        @if (userReview is null)
+        {
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-transparent fw-semibold">Write a Review</div>
+                <div class="card-body">
+                    <form asp-controller="Review" asp-action="Create" method="post">
+                        <input type="hidden" name="productId" value="@Model.Id" />
+
+                        <div class="mb-3">
+                            <label class="form-label">Rating</label>
+                            <div class="d-flex gap-2" id="starRating">
+                                @for (int i = 1; i <= 5; i++)
+                                {
+                                    <i class="bi bi-star fs-4 text-warning star-btn" style="cursor:pointer"
+                                       data-value="@i"></i>
+                                }
+                            </div>
+                            <input type="hidden" name="rating" id="ratingInput" required />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Comment <span class="text-muted">(optional)</span></label>
+                            <textarea name="comment" class="form-control" rows="3"
+                                      maxlength="1000" placeholder="Share your experience..."></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Submit Review</button>
+                    </form>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-info mb-4">
+                <i class="bi bi-check-circle me-2"></i>
+                You've already reviewed this product.
+            </div>
+        }
+    }
+
+    <!-- Existing reviews -->
+    @if (Model.Reviews.Any())
+    {
+        <div class="row g-3">
+            @foreach (var review in Model.Reviews.OrderByDescending(r => r.CreatedAt))
+            {
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between mb-2">
+                                <div>
+                                    <span class="fw-semibold">@review.Customer.FirstName @review.Customer.LastName</span>
+                                    <div class="text-warning">
+                                        @for (int i = 1; i <= 5; i++)
+                                        {
+                                            <i class="bi bi-star@(i <= review.Rating ? "-fill" : "")"></i>
+                                        }
+                                    </div>
+                                </div>
+                                <span class="text-muted small">@review.CreatedAt.ToString("MMM dd, yyyy")</span>
+                            </div>
+                            @if (!string.IsNullOrWhiteSpace(review.Comment))
+                            {
+                                <p class="mb-0 text-muted">@review.Comment</p>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="text-center text-muted py-4 border rounded">
+            <i class="bi bi-chat-square-text display-4 d-block mb-2"></i>
+            No reviews yet. Be the first to review this product!
+        </div>
+    }
+</div>
+
+<!-- Related products -->
+@if (related.Any())
+{
+    <div class="mb-4">
+        <h4 class="mb-3">Related Products</h4>
+        <div class="row row-cols-2 row-cols-md-4 g-3">
+            @foreach (var rp in related)
+            {
+                var rpImg = rp.Images.FirstOrDefault(i => i.IsMain) ?? rp.Images.FirstOrDefault();
+                <div class="col">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <a asp-controller="Shop" asp-action="Details" asp-route-id="@rp.Id"
+                           class="text-decoration-none text-dark">
+                            <div style="height:150px;overflow:hidden">
+                                @if (rpImg is not null)
+                                {
+                                    <img src="@rpImg.ImageUrl" class="card-img-top h-100 w-100"
+                                         style="object-fit:cover" alt="@rp.Name" />
+                                }
+                                else
+                                {
+                                    <div class="bg-light h-100 d-flex align-items-center justify-content-center">
+                                        <i class="bi bi-image text-muted"></i>
+                                    </div>
+                                }
+                            </div>
+                            <div class="card-body py-2">
+                                <p class="mb-1 small fw-semibold">@rp.Name</p>
+                                <span class="text-primary fw-bold">$@rp.Price.ToString("N2")</span>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        // Thumbnail switcher
+        function switchImage(url, el) {
+            document.getElementById('mainImage')?.setAttribute('src', url);
+            document.querySelectorAll('.thumb-img').forEach(t => {
+                t.classList.remove('border-primary', 'border-2');
+            });
+            el.classList.add('border-primary', 'border-2');
+        }
+
+        // Star rating picker
+        const stars = document.querySelectorAll('.star-btn');
+        const ratingInput = document.getElementById('ratingInput');
+        stars.forEach(star => {
+            star.addEventListener('click', () => {
+                const val = parseInt(star.dataset.value);
+                ratingInput.value = val;
+                stars.forEach((s, idx) => {
+                    s.classList.toggle('bi-star-fill', idx < val);
+                    s.classList.toggle('bi-star', idx >= val);
+                });
+            });
+            star.addEventListener('mouseenter', () => {
+                const val = parseInt(star.dataset.value);
+                stars.forEach((s, idx) => {
+                    s.classList.toggle('bi-star-fill', idx < val);
+                    s.classList.toggle('bi-star', idx >= val);
+                });
+            });
+        });
+        document.getElementById('starRating')?.addEventListener('mouseleave', () => {
+            const val = parseInt(ratingInput?.value || '0');
+            stars.forEach((s, idx) => {
+                s.classList.toggle('bi-star-fill', idx < val);
+                s.classList.toggle('bi-star', idx >= val);
+            });
+        });
+    </script>
+}

@@ -1,0 +1,71 @@
+﻿@using ECommerceApplication.Models
+@model Order
+@{
+    ViewData["Title"] = $"Order #{Model.Id}";
+    Layout = "~/Areas/Vendor/Views/Shared/_VendorLayout.cshtml";
+    var (bg, icon) = Model.Status switch
+    {
+        OrderStatus.Pending => ("bg-warning text-dark", "bi-hourglass"),
+        OrderStatus.Processing => ("bg-info text-dark", "bi-gear"),
+        OrderStatus.Shipped => ("bg-primary", "bi-truck"),
+        OrderStatus.Delivered => ("bg-success", "bi-check-circle"),
+        OrderStatus.Cancelled => ("bg-danger", "bi-x-circle"),
+        _ => ("bg-secondary", "bi-circle")
+    };
+}
+
+<div class="d-flex align-items-center gap-2 mb-4">
+    <a asp-action="Index" class="btn btn-sm btn-outline-secondary"><i class="bi bi-arrow-left"></i></a>
+    <h4 class="mb-0">Order #@Model.Id</h4>
+    <span class="badge @bg"><i class="bi @icon me-1"></i>@Model.Status</span>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-8">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-transparent fw-semibold">Your Items in This Order</div>
+            @foreach (var item in Model.OrderItems)
+            {
+                var img = item.Product.Images.FirstOrDefault(i => i.IsMain) ?? item.Product.Images.FirstOrDefault();
+                <div class="d-flex align-items-center gap-3 p-3 @(item != Model.OrderItems.Last() ? "border-bottom" : "")">
+                    @if (img is not null)
+                    {
+                        <img src="@img.ImageUrl" class="rounded" style="width:60px;height:60px;object-fit:cover" alt="@item.Product.Name" />
+                    }
+                    else
+                    {
+                        <div class="rounded bg-light d-flex align-items-center justify-content-center" style="width:60px;height:60px">
+                            <i class="bi bi-image text-muted"></i>
+                        </div>
+                    }
+                    <div class="flex-grow-1">
+                        <div class="fw-semibold">@item.Product.Name</div>
+                        <div class="text-muted small">
+                            Qty: @item.Quantity &bull; $@item.UnitPrice.ToString("N2") each
+                        </div>
+                    </div>
+                    <div class="fw-bold text-primary">$@((item.UnitPrice * item.Quantity).ToString("N2"))</div>
+                </div>
+            }
+            <div class="card-footer bg-transparent d-flex justify-content-between fw-bold">
+                <span>Your Revenue</span>
+                <span class="text-primary">$@Model.OrderItems.Sum(i => i.UnitPrice * i.Quantity).ToString("N2")</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm mb-3">
+            <div class="card-header bg-transparent fw-semibold">Customer</div>
+            <div class="card-body small">
+                <div class="fw-semibold">@Model.Customer.FirstName @Model.Customer.LastName</div>
+                <div class="text-muted">@Model.Customer.Email</div>
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-transparent fw-semibold">Shipping Address</div>
+            <div class="card-body text-muted small">@Model.ShippingAddress</div>
+        </div>
+    </div>
+</div>

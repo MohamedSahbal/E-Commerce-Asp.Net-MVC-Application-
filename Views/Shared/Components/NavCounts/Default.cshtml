@@ -1,0 +1,30 @@
+@using ECommerceApplication.ViewComponents
+@model NavCountsModel
+
+@if (User.IsInRole("Customer"))
+{
+    <li class="nav-item position-relative">
+        <a class="nav-link" asp-controller="Wishlist" asp-action="Index" title="Wishlist">
+            <i class="bi bi-heart fs-5"></i>
+            @if (Model.WishlistCount > 0)
+            {
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                      style="font-size:.6rem">
+                    @Model.WishlistCount
+                </span>
+            }
+        </a>
+    </li>
+    <li class="nav-item position-relative">
+        <a class="nav-link" asp-controller="Cart" asp-action="Index" title="Cart">
+            <i class="bi bi-cart3 fs-5"></i>
+            @if (Model.CartCount > 0)
+            {
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary"
+                      style="font-size:.6rem">
+                    @Model.CartCount
+                </span>
+            }
+        </a>
+    </li>
+}

@@ -1,0 +1,94 @@
+﻿@model IEnumerable<ApplicationUser>
+@{
+    ViewData["Title"] = "Vendors";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="mb-0"><i class="bi bi-shop me-2"></i>Vendors</h4>
+</div>
+
+@{
+    var pending = Model.Where(u => u.VendorStatus == VendorStatus.Pending).ToList();
+    var approved = Model.Where(u => u.VendorStatus == VendorStatus.Approved).ToList();
+    var rejected = Model.Where(u => u.VendorStatus == VendorStatus.Rejected).ToList();
+}
+
+@if (pending.Any())
+{
+    <h6 class="text-uppercase text-muted small mb-2">Pending Approval</h6>
+    <div class="card border-warning border-0 shadow-sm mb-4">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-warning">
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Applied</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var vendor in pending)
+                    {
+                        <tr>
+                            <td class="fw-semibold">@vendor.FirstName @vendor.LastName</td>
+                            <td>@vendor.Email</td>
+                            <td class="text-muted small">@vendor.CreatedAt.ToString("MMM dd, yyyy")</td>
+                            <td>
+                                <form asp-action="Approve" asp-route-id="@vendor.Id" method="post" class="d-inline">
+                                    <button type="submit" class="btn btn-sm btn-success me-1">
+                                        <i class="bi bi-check-lg me-1"></i>Approve
+                                    </button>
+                                </form>
+                                <form asp-action="Reject" asp-route-id="@vendor.Id" method="post" class="d-inline"
+                                      onsubmit="return confirm('Reject this vendor application?')">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                                        <i class="bi bi-x-lg me-1"></i>Reject
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+
+@if (approved.Any())
+{
+    <h6 class="text-uppercase text-muted small mb-2">Approved Vendors</h6>
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Joined</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var vendor in approved)
+                    {
+                        <tr>
+                            <td class="fw-semibold">@vendor.FirstName @vendor.LastName</td>
+                            <td>@vendor.Email</td>
+                            <td class="text-muted small">@vendor.CreatedAt.ToString("MMM dd, yyyy")</td>
+                            <td><span class="badge bg-success">Approved</span></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+
+@if (!Model.Any())
+{
+    <div class="text-center text-muted py-5">
+        <i class="bi bi-shop display-3 mb-3 d-block"></i>
+        No vendor applications yet.
+    </div>
+}
