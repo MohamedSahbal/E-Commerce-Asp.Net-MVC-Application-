@@ -5,6 +5,7 @@ using ECommerceApplication.Data;
 using ECommerceApplication.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Stripe;
 var builder = WebApplication.CreateBuilder(args);
 
 // EF Core + SQL Server
@@ -30,7 +31,11 @@ builder.Services.ConfigureApplicationCookie(options =>
 });
 // Cloudinary service
 builder.Services.AddSingleton<CloudinaryService>();
-// product Image & Category Service 
+
+// Stripe
+StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
+
+// product Image,Category and Cart Services 
 builder.Services.AddScoped<IProductImageService, ProductImageService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<ICartService, CartService>();

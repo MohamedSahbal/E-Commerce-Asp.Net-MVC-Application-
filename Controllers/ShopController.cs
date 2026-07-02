@@ -20,7 +20,7 @@ namespace ECommerce_Application.Controllers
             int? categoryId,
             decimal? minPrice,
             decimal? maxPrice,
-            string sortedBy = "newest",
+            string sortBy = "newest",
             int page = 1)
         {
             var query = _context.Products
@@ -50,7 +50,7 @@ namespace ECommerce_Application.Controllers
             // search by price
             if (minPrice.HasValue) query = query.Where(p => p.Price >= minPrice);
             if (maxPrice.HasValue) query = query.Where(p => p.Price <= maxPrice);
-            query = sortedBy switch
+            query = sortBy switch
             {
                 "price_asc" => query.OrderBy(p => p.Price),
                 "price_desc" => query.OrderByDescending(p => p.Price),
@@ -81,7 +81,7 @@ namespace ECommerce_Application.Controllers
                 CategoryId = categoryId,
                 MinPrice = minPrice,
                 MaxPrice = maxPrice,
-                SortBy = sortedBy,
+                SortBy = sortBy,
                 Page = page,
                 TotalPages = totalPages,
                 TotalCount = total,

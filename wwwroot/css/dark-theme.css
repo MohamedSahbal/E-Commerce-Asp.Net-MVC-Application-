@@ -1,0 +1,88 @@
+﻿/* ===========================
+   Bootstrap Dark Theme Customization
+=========================== */
+
+/* Sidebar */
+[data-bs-theme="dark"] .sidebar {
+    background-color: #1e1e2d !important;
+}
+
+    [data-bs-theme="dark"] .sidebar .nav-link {
+        color: #d6d6d6;
+    }
+
+        [data-bs-theme="dark"] .sidebar .nav-link:hover,
+        [data-bs-theme="dark"] .sidebar .nav-link.active {
+            background-color: #2f3542;
+            color: #fff;
+        }
+
+/* Navbar */
+[data-bs-theme="dark"] .navbar {
+    border-bottom: 1px solid #343a40;
+}
+
+/* Cards */
+[data-bs-theme="dark"] .card {
+    border-color: #343a40;
+}
+
+/* Tables */
+[data-bs-theme="dark"] .table {
+    --bs-table-bg: transparent;
+}
+
+/* Footer */
+[data-bs-theme="dark"] footer {
+    border-top: 1px solid #343a40;
+}
+
+/* Images */
+[data-bs-theme="dark"] img {
+    transition: .3s;
+}
+
+/* Dropdown */
+[data-bs-theme="dark"] .dropdown-menu {
+    border-color: #444;
+}
+
+/* ===========================
+   Global Text Fix
+=========================== */
+
+[data-bs-theme="dark"] {
+    color: var(--bs-body-color);
+    background-color: var(--bs-body-bg);
+}
+
+    [data-bs-theme="dark"] .card:not(.bg-primary):not(.bg-success):not(.bg-danger):not(.bg-warning):not(.bg-info):not(.bg-dark) {
+        background-color: var(--bs-body-bg);
+        color: var(--bs-body-color);
+    }
+    [data-bs-theme="dark"] .card:not(.bg-primary) .card-body {
+        background-color: inherit;
+        color: inherit;
+    }
+    [data-bs-theme="dark"] .card-header,
+    [data-bs-theme="dark"] .modal-content {
+        color: var(--bs-body-color);
+        background-color: var(--bs-body-bg);
+    }
+
+    [data-bs-theme="dark"] p,
+    [data-bs-theme="dark"] span,
+    [data-bs-theme="dark"] label,
+    [data-bs-theme="dark"] footer,
+    [data-bs-theme="dark"] h1,
+    [data-bs-theme="dark"] h2,
+    [data-bs-theme="dark"] h3,
+    [data-bs-theme="dark"] h4,
+    [data-bs-theme="dark"] h5,
+    [data-bs-theme="dark"] h6,
+    [data-bs-theme="dark"] small,
+    [data-bs-theme="dark"] strong,
+    [data-bs-theme="dark"] td,
+    [data-bs-theme="dark"] th {
+        color: var(--bs-body-color);
+    }

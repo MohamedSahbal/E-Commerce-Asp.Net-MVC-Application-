@@ -49,11 +49,27 @@
                                         <span class="badge bg-success">Main</span>
                                     }
 
-                                    <form asp-action="DeleteImage" method="post">
-                                        <input type="hidden" name="id" value="@img.Id" />
-                                        <input type="hidden" name="productId" value="@Model.Id" />
-                                        <button class="btn btn-sm btn-danger">Delete</button>
-                                    </form>
+    <div class="d-flex gap-2 mt-2">
+    <form asp-action="DeleteImage" method="post" class="flex-fill">
+        <input type="hidden" name="id" value="@img.Id" />
+        <input type="hidden" name="productId" value="@Model.Id" />
+        <button type="submit" class="btn btn-sm btn-danger w-100">
+            Delete
+        </button>
+    </form>
+
+    @if (!img.IsMain)
+    {
+        <form asp-action="SetMainImage" method="post" class="flex-fill">
+            <input type="hidden" name="id" value="@img.Id" />
+            <input type="hidden" name="productId" value="@Model.Id" />
+            <button type="submit" class="btn btn-sm btn-success w-100">
+                Set Main
+            </button>
+        </form>
+    }
+
+</div>
                                 </div>
                             }
 

@@ -23,7 +23,7 @@ namespace ECommerce_Application.Areas.Admin.Controllers
         public async Task<IActionResult> Index()
         {
             ViewBag.TotalProducts = await _context.Products.CountAsync();
-            ViewBag.Orders= await _context.Orders.CountAsync();
+            ViewBag.TotalOrders = await _context.Orders.CountAsync();
             ViewBag.TotalCustomers = await _context.Users
                 .Where(u => u.VendorStatus == VendorStatus.NotApplicable).CountAsync();
             ViewBag.PendingVendors = await _context.Users

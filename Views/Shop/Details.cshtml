@@ -1,4 +1,5 @@
-﻿@model Product
+﻿
+@model Product
 @{
     ViewData["Title"] = Model.Name;
     var images = Model.Images.ToList();
@@ -35,11 +36,17 @@
     <!-- Image gallery -->
     <div class="col-md-5">
         <div class="sticky-top" style="top:1rem">
-            <div class="rounded overflow-hidden border mb-2" id="mainImageBox" style="height:380px">
+            <div class="rounded overflow-hidden border mb-2 bg-white"
+                 id="mainImageBox"
+                 style="height:500px">
                 @if (mainImg is not null)
                 {
-                    <img id="mainImage" src="@mainImg.ImageUrl"
-                         class="w-100 h-100" style="object-fit:cover" alt="@Model.Name" />
+                    <img id="mainImage"
+                        src="@mainImg.ImageUrl"
+                         data-zoom="@mainImg.ImageUrl"
+                         class="w-100 h-100"
+                         style="object-fit:contain"
+                          alt="@Model.Name" />
                 }
                 else
                 {
@@ -56,7 +63,7 @@
                         <img src="@img.ImageUrl" alt=""
                              class="rounded border thumb-img @(img.IsMain ? "border-primary border-2" : "")"
                              style="width:64px;height:64px;object-fit:cover;cursor:pointer"
-                             onclick="switchImage('@img.ImageUrl', this)" />
+                        />
                     }
                 </div>
             }
@@ -280,45 +287,10 @@
             }
         </div>
     </div>
-}
+    }
 
-@section Scripts {
-    <script>
-        // Thumbnail switcher
-        function switchImage(url, el) {
-            document.getElementById('mainImage')?.setAttribute('src', url);
-            document.querySelectorAll('.thumb-img').forEach(t => {
-                t.classList.remove('border-primary', 'border-2');
-            });
-            el.classList.add('border-primary', 'border-2');
-        }
+    @section Scripts {
+        <script src="~/js/product-details.js" asp-append-version="true"></script>
+    }
 
-        // Star rating picker
-        const stars = document.querySelectorAll('.star-btn');
-        const ratingInput = document.getElementById('ratingInput');
-        stars.forEach(star => {
-            star.addEventListener('click', () => {
-                const val = parseInt(star.dataset.value);
-                ratingInput.value = val;
-                stars.forEach((s, idx) => {
-                    s.classList.toggle('bi-star-fill', idx < val);
-                    s.classList.toggle('bi-star', idx >= val);
-                });
-            });
-            star.addEventListener('mouseenter', () => {
-                const val = parseInt(star.dataset.value);
-                stars.forEach((s, idx) => {
-                    s.classList.toggle('bi-star-fill', idx < val);
-                    s.classList.toggle('bi-star', idx >= val);
-                });
-            });
-        });
-        document.getElementById('starRating')?.addEventListener('mouseleave', () => {
-            const val = parseInt(ratingInput?.value || '0');
-            stars.forEach((s, idx) => {
-                s.classList.toggle('bi-star-fill', idx < val);
-                s.classList.toggle('bi-star', idx >= val);
-            });
-        });
-    </script>
-}
+

@@ -4,14 +4,13 @@
     var categories = ViewBag.TopCategories as List<Category> ?? new();
 }
 
-@* Hero *@
 <div class="p-5 mb-4 bg-dark text-white rounded-3 position-relative overflow-hidden">
     <div class="container-fluid py-2 position-relative" style="z-index:1">
         <h1 class="display-5 fw-bold">
             <i class="bi bi-bag-heart-fill me-2"></i>Welcome to Dreams Shop
         </h1>
         <p class="col-md-7 fs-5 text-white-50">
-            Discover thousands of products from trusted vendors. Secure payments, genuine reviews, fast shipping.
+         Make your Dreams come true , Discover thousands of products from trusted vendors. Secure payments, genuine reviews, Competitive prices, fast shipping.
         </p>
         <div class="d-flex gap-2 flex-wrap">
             <a asp-controller="Shop" asp-action="Index" class="btn btn-primary btn-lg">
@@ -78,7 +77,7 @@
             {
                 <div class="col">
                     <a asp-controller="Shop" asp-action="Index" asp-route-categoryId="@cat.Id"
-                       class="card border-0 shadow-sm text-decoration-none text-dark h-100 text-center">
+                       class="card border-0 shadow-sm text-decoration-none text-body h-100 text-center">
                         <div class="card-body py-3 px-2">
                             <i class="bi bi-folder2 fs-1 text-primary mb-2 d-block"></i>
                             <div class="fw-semibold small">@cat.Name</div>
@@ -116,7 +115,7 @@
                                 @if (img is not null)
                                 {
                                     <img src="@img.ImageUrl" class="card-img-top h-100 w-100"
-                                         style="object-fit:cover;transition:transform .3s" alt="@p.Name" />
+                                         style="object-fit:contain;transition:transform .3s" alt="@p.Name" />
                                 }
                                 else
                                 {
@@ -129,8 +128,10 @@
                         <div class="card-body d-flex flex-column py-2">
                             <p class="text-muted small mb-1">@p.Category.Name</p>
                             <h6 class="mb-1 flex-grow-1">
-                                <a asp-controller="Shop" asp-action="Details" asp-route-id="@p.Id"
-                                   class="text-decoration-none text-dark stretched-link">
+                                <a asp-controller="Shop"
+                                   asp-action="Details"
+                                   asp-route-id="@p.Id"
+                                   class="text-decoration-none text-body stretched-link">
                                     @p.Name
                                 </a>
                             </h6>
@@ -165,7 +166,7 @@
     <div class="card bg-primary text-white border-0 shadow mb-4">
         <div class="card-body d-flex flex-wrap justify-content-between align-items-center gap-3 p-4">
             <div>
-                <h5 class="mb-1 fw-bold">Sell on ShopHub</h5>
+                <h5 class="mb-1 fw-bold">Sell on Dreams Shop</h5>
                 <p class="mb-0 opacity-75">Join our marketplace — reach thousands of customers today.</p>
             </div>
             <a asp-controller="Account" asp-action="Register" class="btn btn-light btn-lg fw-semibold">

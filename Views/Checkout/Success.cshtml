@@ -1,0 +1,46 @@
+﻿@model Order
+@{
+    ViewData["Title"] = "Order Confirmed";
+}
+
+<div class="text-center py-4 mb-4">
+    <div class="mb-3">
+        <i class="bi bi-check-circle-fill display-1 text-success"></i>
+    </div>
+    <h2 class="fw-bold">Order Confirmed!</h2>
+    <p class="text-muted fs-5">
+        Thank you for your purchase. Your order <strong>#@Model.Id</strong> has been placed.
+    </p>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-7">
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-transparent fw-semibold">Order Details</div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-4">Order #</dt>
+                    <dd class="col-sm-8 fw-semibold">@Model.Id</dd>
+                    <dt class="col-sm-4">Status</dt>
+                    <dd class="col-sm-8">
+                        <span class="badge bg-info text-dark">@Model.Status</span>
+                    </dd>
+                    <dt class="col-sm-4">Total Paid</dt>
+                    <dd class="col-sm-8 fw-bold text-primary fs-5">$@Model.Total.ToString("N2")</dd>
+                    <dt class="col-sm-4">Ship To</dt>
+                    <dd class="col-sm-8 text-muted small">@Model.ShippingAddress</dd>
+                </dl>
+            </div>
+        </div>
+
+        <div class="d-flex gap-3 justify-content-center">
+            <a asp-controller="Orders" asp-action="Details" asp-route-id="@Model.Id"
+               class="btn btn-primary">
+                <i class="bi bi-receipt me-1"></i>View Order
+            </a>
+            <a asp-controller="Shop" asp-action="Index" class="btn btn-outline-secondary">
+                <i class="bi bi-grid me-1"></i>Continue Shopping
+            </a>
+        </div>
+    </div>
+</div>

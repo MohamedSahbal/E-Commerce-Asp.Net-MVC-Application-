@@ -19,7 +19,7 @@
         }
         @if (main is not null)
         {
-            <img src="@main.ImageUrl" class="img-fluid rounded shadow-sm w-100" style="object-fit:cover;max-height:350px" alt="@Model.Name" />
+            <img src="@main.ImageUrl" class="img-fluid rounded shadow-sm w-100" style="object-fit:contain;max-height:350px" alt="@Model.Name" />
             @if (images.Count > 1)
             {
                 <div class="d-flex gap-2 mt-2 flex-wrap">
