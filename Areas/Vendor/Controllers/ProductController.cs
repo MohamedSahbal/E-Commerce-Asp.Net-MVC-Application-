@@ -172,17 +172,25 @@ namespace ECommerce_Application.Areas.Vendor.Controllers
             }
             var product = await _context.Products
                 .Include(p => p.Images)
-                .FirstOrDefaultAsync(p => p.Id == id && p.VendorId == vendorId);
-            if (product is null) return NotFound();
-            foreach (var image in product.Images) 
+                .FirstOrDefaultAsync(p => p.Id == id);
+
+            if (product == null)
+                return NotFound();
+
+            foreach (var image in product.Images.ToList())
             {
                 await _productImageService.DeleteImage(image.Id);
             }
+
             _context.Products.Remove(product);
-            _context.SaveChanges();
+
+            await _context.SaveChangesAsync();
+
             TempData["Success"] = "Product deleted Successfully.";
+
             return RedirectToAction(nameof(Index));
         }
+       
 
        
                 [HttpPost]

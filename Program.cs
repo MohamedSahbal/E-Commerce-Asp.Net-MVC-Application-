@@ -1,5 +1,7 @@
+using ECommerce_Application.Configurations;
 using ECommerce_Application.Services;
 using ECommerce_Application.Services.Cart_Service;
+using ECommerce_Application.Services.Email_Service;
 using ECommerceApp.Services;
 using ECommerceApplication.Data;
 using ECommerceApplication.Models;
@@ -35,13 +37,16 @@ builder.Services.AddSingleton<CloudinaryService>();
 // Stripe
 StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
 
-// product Image,Category and Cart Services 
+// product Image,Category Cart , Email Services 
 builder.Services.AddScoped<IProductImageService, ProductImageService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<ICartService, CartService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 
 builder.Services.AddControllersWithViews(); // MVC
+builder.Services.Configure<EmailSettings>(
+builder.Configuration.GetSection("EmailSettings"));
 
 var app = builder.Build();
 

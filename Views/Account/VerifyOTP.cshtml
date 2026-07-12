@@ -1,0 +1,147 @@
+﻿@using ECommerce_Application.ViewModels
+@model VerifyOtpVM
+
+@{
+    ViewData["Title"] = "Verify OTP";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+
+        <div class="col-lg-5 col-md-7">
+
+            <div class="card border-0 shadow-lg rounded-4">
+
+                <div class="card-body p-5">
+
+                    <div class="text-center mb-4">
+
+                        <div class="bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                             style="width:80px;height:80px;">
+                            <i class="bi bi-shield-lock fs-1 text-success"></i>
+                        </div>
+
+                        <h2 class="fw-bold">Verify OTP</h2>
+
+                        <p class="text-muted mb-1">
+                            We've sent a verification code to
+                        </p>
+
+                        <strong>@Model.Email</strong>
+
+                    </div>
+
+                    <div class="alert alert-info text-center">
+                        <i class="bi bi-clock-history me-2"></i>
+
+                        OTP expires in
+
+                        <span id="timer"
+                              class="fw-bold text-danger">
+                            05:00
+                        </span>
+                    </div>
+
+                    <form asp-action="VerifyOTP" method="post">
+
+                        <input asp-for="Email" type="hidden" />
+
+                        <div asp-validation-summary="All"
+                             class="text-danger mb-3"></div>
+
+                        <div class="mb-4">
+
+                            <label asp-for="OTP"
+                                   class="form-label fw-semibold">
+                                Verification Code
+                            </label>
+
+                            <input asp-for="OTP"
+                                   maxlength="6"
+                                   autocomplete="off"
+                                   class="form-control form-control-lg text-center fw-bold"
+                                   style="letter-spacing:10px;font-size:28px;"
+                                   placeholder="000000" />
+
+                            <span asp-validation-for="OTP"
+                                  class="text-danger"></span>
+
+                        </div>
+
+                        <button id="verifyBtn"
+                                class="btn btn-success btn-lg w-100">
+
+                            Verify OTP
+
+                        </button>
+
+                    </form>
+
+                    <div class="text-center mt-4">
+
+                        <p class="text-muted mb-2">
+                            Didn't receive the code?
+                        </p>
+
+                        <a asp-action="ForgotPassword"
+                           class="text-decoration-none fw-semibold">
+
+                            Resend OTP
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+@section Scripts {
+
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+
+        let timeLeft = 300;
+
+        const timer = document.getElementById("timer");
+        const verifyBtn = document.getElementById("verifyBtn");
+
+        function updateTimer() {
+
+            let minutes = Math.floor(timeLeft / 60);
+            let seconds = timeLeft % 60;
+
+            timer.innerHTML =
+                `${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
+
+            if(timeLeft <= 0){
+
+                clearInterval(interval);
+
+                timer.innerHTML = "Expired";
+
+                timer.classList.remove("text-danger");
+
+                timer.classList.add("text-dark");
+
+                verifyBtn.disabled = true;
+
+                verifyBtn.innerHTML = "OTP Expired";
+            }
+
+            timeLeft--;
+        }
+
+        updateTimer();
+
+        const interval = setInterval(updateTimer,1000);
+
+    </script>
+
+}

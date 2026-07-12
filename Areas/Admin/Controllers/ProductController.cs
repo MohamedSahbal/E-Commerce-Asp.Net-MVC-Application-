@@ -163,18 +163,29 @@ namespace ECommerce_Application.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
-            var product = await _context.Products.Include(p => p.Images).FirstOrDefaultAsync(p => p.Id == id);
-            if (product is null) return NotFound();
-            foreach (var image in product.Images)
+            var product = await _context.Products
+                .Include(p => p.Images)
+                .FirstOrDefaultAsync(p => p.Id == id);
+
+            if (product == null)
+                return NotFound();
+
+            foreach (var image in product.Images.ToList())
+            {
                 await _productImageService.DeleteImage(image.Id);
+            }
+
             _context.Products.Remove(product);
+
             await _context.SaveChangesAsync();
+
             TempData["Success"] = "Product deleted Successfully.";
+
             return RedirectToAction(nameof(Index));
         }
 
 
 
-        
+
     }
 }

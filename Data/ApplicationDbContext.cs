@@ -1,4 +1,5 @@
-﻿using ECommerceApplication.Models;
+﻿using ECommerce_Application.Models;
+using ECommerceApplication.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System.Numerics;
@@ -21,6 +22,8 @@ namespace ECommerceApplication.Data
         public DbSet<WishlistItem> WishlistItems { get; set; } = null!;
         public DbSet<Promotion> Promotions { get; set; } = null!;
         public DbSet<ProductImage> ProductImages { get; set; }
+        public DbSet<PasswordResetOTP> PasswordResetOTPs { get; set; }
+
         // Fluent API configurations Relationships and constraints
         protected override void OnModelCreating(ModelBuilder builder)
         {
